@@ -45,26 +45,6 @@ a {
 
 
 <body>
-<?php
-
-// require_once('connection.php');
-// $email = $_POST['email'];
-// $pass = $_POST['password'];
-// $hashed = sha1($pass);
-// if ($_POST){
-//     $sql = "SELECT * FROM users WHERE email='$email' AND password='$hashed'";
-//     $result = $con->query($sql);
-//     if ($result->fetch_array()){
-//         echo "ok";
-//         header('Location: loggedin.php');
-//     } else {
-//         echo "Incorrect Email or Password ";
-//     }
-// }
-// $con->close();
-?>
-
-
 
 <h1>User Login</h1>
 

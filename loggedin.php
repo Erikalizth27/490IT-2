@@ -1,5 +1,12 @@
 
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
+$connection = new AMQPStreamConnection('localhost',5672, 'guest', 'guest');
+$channel = $connection->channel();
+$channel->queue_declare('hello', false, false, false, false);
+
 
 function curl($url) {
     
@@ -12,13 +19,18 @@ function curl($url) {
 
         return $data;
     } 
-echo "aqui";
+//echo "aqui";
 if ($_GET['city']) {
     echo "hi";
+    $urlContents = "http://api.openweathermap.org/data/2.5/weather?q=".$_GET['city']."&appid=68bf397028ac2dffb4cdd324558c2d54";
+
+    $weather_data = file_get_contents($urlContents);
+    $weatherArray = json_decode($weather_data, true);
+
     
-    $urlContents = curl("https://api.openweathermap.org/data/2.5/weather?id=707860&appid=68bf397028ac2dffb4cdd324558c2d54");
+    //$urlContents = curl("http://api.openweathermap.org/data/2.5/weather?id=707860&appid=68bf397028ac2dffb4cdd324558c2d54");
     
-    $weatherArray = json_decode($urlContents, true);
+    //$weatherArray = json_decode($urlContents, true);
     
     $weather = "The weather in ".$_GET['city']." is currently ".$weatherArray['weather'][0]['description'].".";
     
@@ -27,9 +39,8 @@ if ($_GET['city']) {
     $speedInMPH = intval($weatherArray['wind']['speed']*2.24);
     
     $weather .=" The temperature is ".$tempInFahrenheit."&deg; F with a wind speed of ".$speedInMPH." MPH.";
-    
-echo $weather;
-    
+
+
 }
 
 ?>
@@ -125,6 +136,9 @@ echo $weather;
       <div class="form-group">
         <label for="city">Enter the name of a city.</label>
         <input type="text" class="form-control" id="city" name="city" aria-describedby="city" placeholder="E.g. New York, Tokyo" value="<?php echo $_GET['city']; ?>">
+        <label for="clothes" > What type of clothes do you need  </label>
+
+        
       </div>
 
       <button type="submit" class="btn btn-primary">Submit</button>
@@ -134,10 +148,52 @@ echo $weather;
      <div id="weather">
       
       <?php 
-        
+                require_once('connection.php');
+
         if($weather) {
             
             echo '<div class="alert alert-success" role="alert">'.$weather.'</div>';
+
+
+        $temp1 = 0;
+        $temp2 = 0;
+        if ($tempInFahrenheit > 0 && $tempInFahrenheit < 20){
+            $temp1 = 0;
+            $temp2 = 20;
+        } else if($tempInFahrenheit > 20 && $tempInFahrenheit < 40){
+            $temp1 = 20;
+            $temp2 = 40;
+        } else if($tempInFahrenheit > 40 && $tempInFahrenheit < 70){
+            $temp1 = 40;
+            $temp2 = 70;
+        } else {
+            $temp1 = 70;
+            $temp2 = 500;
+        }
+    
+          $sql = "SELECT clothes FROM clothe_weather WHERE temperature between $temp1 and $temp2";
+         $result = $con->query($sql);
+         //$line = "\r\n";
+         $file = "somename.txt";
+    $fp=fopen($file,'a');
+    $line = "\r\n";
+         //while($ris=mysql_fetch_array($result)) echo $ris[0];
+    
+         if ($result->fetch_array()){
+            $msg = new AMQPMessage($email.' New search ');
+            fwrite($fp, date("Y-m-d h:i:sa").' '.$email. '  New search '.$line);
+            $channel->basic_publish($msg, '', 'hello');
+
+            foreach($result as $ri){
+                //echo $ri['clothes'].$line;
+                
+                echo '<div class="alert alert-success" role="alert">'.$ri['clothes'].'</div>';
+    //var_dump($ri);
+            }
+         } else {
+             echo "No";
+         }
+         $con->close();
             
         } else {
             
@@ -146,7 +202,7 @@ echo $weather;
                 echo '<div class="alert alert-danger" role="alert">Sorry, that city could not be found.</div>';
             }
         }
-      
+
       ?>
   
   </div>
