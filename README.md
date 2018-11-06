@@ -9,5 +9,4 @@ Weather Closet is a website application that will give clothing recommendations 
 Weather Closet is in very early stages of development. Currently, the user is able to register an account, log into the application, and enter their desired city to pull its weather data.
 
 The following are explainations for every file that is currently provided in this branch.
-
 # connection.php
