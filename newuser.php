@@ -1,3 +1,51 @@
+<?php
+require_once __DIR__ . '/vendor/autoload.php';
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
+$connection = new AMQPStreamConnection('localhost',5672, 'guest', 'guest');
+$channel = $connection->channel();
+$channel->queue_declare('hello', false, false, false, false);
+
+require_once('connection.php');
+
+
+
+
+if ($_POST){
+    $user = $_POST['username'];
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $pass = $_POST['password'];
+    //$hashed = sha1($pass);
+    $hashed = password_hash($pass,PASSWORD_DEFAULT);
+    
+    $sql = "INSERT INTO users (username,name, email, password) VALUES ('$user','$name','$email','$hashed')";
+
+    $file = "somename.txt";
+    $fp=fopen($file,'a');
+    $line = "\r\n";
+
+
+    if ($con->query($sql) === TRUE) {
+        header('Location: loggedin.php');
+        $msg = new AMQPMessage($email.' New user and login to the APP');
+        fwrite($fp, date("Y-m-d h:i:sa").' '.$email. '  New user and login to the APP '.$line);
+        $channel->basic_publish($msg, '', 'hello');
+
+    } else {
+        echo "Please fill out all empty boxes " . $sql . "<br>" . $con->error;
+        $msg = new AMQPMessage($email.' Error to register to the APP');
+        fwrite($fp, date("Y-m-d h:i:sa").' ' .$email. '  Error to register to the APP'.$line);
+        $channel->basic_publish($msg, '', 'hello');
+
+    }
+    $con->close();
+}
+
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,31 +89,7 @@ a {
 <h1>User Login</h1>
 
 
-<?php
 
-require_once('connection.php');
-
-
-if ($_POST){
-    $user = $_POST['username'];
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $pass = $_POST['password'];
-    $hashed = sha1($pass);
-    
-    $sql = "INSERT INTO users (username,name, email, password) VALUES ('$user','$name','$email','$hashed')";
-
-    if ($con->query($sql) === TRUE) {
-        //echo "New record created successfully";
-        header('Location: loggedin.php');
-    } else {
-        echo "Please fill out all empty boxes " . $sql . "<br>" . $con->error;
-    }
-    $con->close();
-}
-
-
-?>
 
 <ul>
     
