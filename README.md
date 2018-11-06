@@ -28,5 +28,5 @@ The script that connects to RabbitMQ and waits for any incoming messages from se
 # send.php
 Sends many of the scripts above through RabbitMQ. It will also send error messages if the information sent is incorrect.
 
-#somename.txt
+# somename.txt
 Events are written into this log file. Contains the date, time, account, and whether or not the login was successful or not.
