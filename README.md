@@ -1,3 +1,2 @@
 # Weather Closet
-
-test
+Weather Closet is a website application that will give clothing recommendations according to the weather conditions in your desired city. The application will allow the user to save favorite locations, clothing preferences, and create iteneraries, and even plan a whole trip. 
