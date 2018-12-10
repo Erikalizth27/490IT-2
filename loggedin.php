@@ -21,24 +21,37 @@ function curl($url) {
     } 
 //echo "aqui";
 if ($_GET['city']) {
-    echo "hi";
+    //echo "hi";
     $urlContents = "http://api.openweathermap.org/data/2.5/weather?q=".$_GET['city']."&appid=68bf397028ac2dffb4cdd324558c2d54";
+    
+    $urlContentsForecast = "http://api.openweathermap.org/data/2.5/forecast?q=".$_GET['city']."&appid=68bf397028ac2dffb4cdd324558c2d54";
+
+
+
 
     $weather_data = file_get_contents($urlContents);
     $weatherArray = json_decode($weather_data, true);
+    $weather_dataForecast = file_get_contents($urlContentsForecast);
+    $weatherArrayForecast = json_decode($weather_dataForecast, true);
 
     
     //$urlContents = curl("http://api.openweathermap.org/data/2.5/weather?id=707860&appid=68bf397028ac2dffb4cdd324558c2d54");
     
     //$weatherArray = json_decode($urlContents, true);
+    $line = "\r\n";
+    //echo var_dump($weatherArray);
     
-    $weather = "The weather in ".$_GET['city']." is currently ".$weatherArray['weather'][0]['description'].".";
+    //print_r($weatherArray['list'][0][dt_txt]);
+    //print_r($weatherArray['list'][1][dt_txt]);
+
     
-    $tempInFahrenheit = intval($weatherArray['main']['temp']* 9/5 - 459.67);
+     $weather = "The weather in ".$_GET['city']." is currently ".$weatherArray['weather'][0]['description'].".";
     
-    $speedInMPH = intval($weatherArray['wind']['speed']*2.24);
+     $tempInFahrenheit = intval($weatherArray['main']['temp']* 9/5 - 459.67);
     
-    $weather .=" The temperature is ".$tempInFahrenheit."&deg; F with a wind speed of ".$speedInMPH." MPH.";
+     $speedInMPH = intval($weatherArray['wind']['speed']*2.24);
+    
+     $weather .=" The temperature is ".$tempInFahrenheit."&deg; F with a wind speed of ".$speedInMPH." MPH.";
 
 
 }
@@ -130,7 +143,7 @@ if ($_GET['city']) {
   
  <div class="container">
      
-    <h1>What's the Weather?</h1>
+    <h1>Weather Closet</h1>
      
      <form>
       <div class="form-group">
@@ -206,10 +219,42 @@ if ($_GET['city']) {
       ?>
   
   </div>
+  <?php
+  $showDate = "";
+
+foreach($weatherArrayForecast as $i){
+    
+    foreach ($i as $j) {
+        
+        //echo ($j[weather][0][description]);  
+        //echo ($line);
+        //echo ($j[weather][0][icon]);
+        $aux = explode(" ", strval($j[dt_txt]))[0];
+        if ($aux != $showDate){
+            
+                if (!empty($j[weather][0][description])){
+                   
+                    echo '<div>'.$aux.'</div>';
+                    echo '<div>'.intval($j[main][temp]* 9/5 - 459.67).'&deg;F</div>';
+                    echo '<div>'.$j[weather][0][description].'</div>';
+                    echo '<img  src="https://openweathermap.org/img/w/'.$j[weather][0][icon].'.png">';
+                    
+                    $showDate = $aux;
+                }
+       
+           }
+     }
+     
+    //print_r($i);
+}
+  ?>
+
      
  </div> 
   
-  
+ <div>
+ </div>
+
   
 
 <!-- jQuery first, then Tether, then Bootstrap JS. -->
