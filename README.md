@@ -1,3 +1,9 @@
+# Group # 1
+. Jacob Cohen
+. Pawell Burgos
+. Christopher Ho
+. Erika Reyes
+
 # Weather Closet
 Weather Closet is a website application that will give clothing recommendations according to the weather conditions in your desired city. The application will allow the user to save favorite locations, clothing preferences, and create iteneraries, and even plan a whole trip. This project will be utilizing the following:
 	
