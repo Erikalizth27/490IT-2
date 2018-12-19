@@ -34,7 +34,7 @@ Sends many of the scripts above through RabbitMQ. It will also send error messag
 # somename.txt
 Events are written into this log file. Contains the date, time, account, and whether or not the login was successful or not.
 
-# preferecence.php
+# preference.php
 Save preference clothe and location in the database.
 
 # replication 
